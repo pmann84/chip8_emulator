@@ -89,6 +89,13 @@ bool chip8::chip8::execute_opcode()
          m_program_ctr += m_registers[reg] != value ? 4 : 2;
          return false;
       }
+      case opcode_defs::SKIP_EQ_V:
+      {
+         uint8_t first_reg = code.lower_half_of_first_byte();
+         uint8_t last_reg = code.upper_half_of_last_byte();
+         m_program_ctr += m_registers[first_reg] == m_registers[last_reg] ? 4 : 2;
+         return false;
+      }
       case opcode_defs::MVI_V:
       {
          auto reg = code.lower_half_of_first_byte();
@@ -162,6 +169,13 @@ bool chip8::chip8::execute_opcode()
          }
          m_program_ctr += 2;
       }
+      case opcode_defs::SKIP_NEQ_V:
+      {
+         uint8_t first_reg = code.lower_half_of_first_byte();
+         uint8_t last_reg = code.upper_half_of_last_byte();
+         m_program_ctr += m_registers[first_reg] != m_registers[last_reg] ? 4 : 2;
+         return false;
+      }
       case opcode_defs::MVI_I:
       {
          m_idx_register = code.get_last_12_bits();
@@ -171,9 +185,32 @@ bool chip8::chip8::execute_opcode()
       case opcode_defs::SPRITE_V:
       {
          // TODO: Draws a sprite at coordinate (VX, VY) that has a width of 8 pixels and a height of N pixels. Each row of 8 pixels is read as bit-coded starting from memory location I; I value doesn’t change after the execution of this instruction. As described above, VF is set to 1 if any screen pixels are flipped from set to unset when the sprite is drawn, and to 0 if that doesn’t happen
+         // Draw a sprite at position VX, VY with N bytes of sprite data starting at the address stored in I
+         // Set VF to 01 if any set pixels are changed to unset, and 00 otherwise
          uint8_t first_reg = code.lower_half_of_first_byte();
          uint8_t last_reg = code.upper_half_of_last_byte();
          uint8_t height = code.lower_half_of_last_byte();
+         uint8_t pixel;
+
+         m_registers[0xf] = 0;
+
+         for (int y = 0; y < height; ++y)
+         {
+            pixel = m_memory[m_idx_register + y];
+            for (int x = 0; x < 8; ++x)
+            {
+               if (pixel & (0x80 >> x) != 0)
+               {
+                  auto gfx_mem_idx = first_reg + x + ((last_reg + y) * 64);
+                  if (m_gfx_memory[gfx_mem_idx] == 1)
+                  {
+                     m_registers[0xf] = 1;
+                  }
+                  m_gfx_memory[gfx_mem_idx] ^= 1;
+               }
+            }
+         }
+
          m_program_ctr += 2;
          return true;
       }
@@ -272,30 +309,7 @@ bool chip8::chip8::execute_opcode()
       }
    }
 
-      //   case 0x05:
-      //   {
-      //      uint8_t first_reg = first & 0x0f;
-      //      uint8_t last_reg = last >> 4;
-      //      std::cout << "SKIP.EQ V";
-      //      output_hex(first_reg, 1);
-      //      std::cout << ",V";
-      //      output_hex(last_reg, 1);
-      //      std::cout << std::endl;
-      //      break;
-      //   }
 
-      //   case 0x09:
-      //   {
-      //      uint8_t first_reg = first & 0x0f;
-      //      uint8_t last_reg = last >> 4;
-      //      std::cout << "SKIP.NEQ V";
-      //      output_hex(first_reg, 1);
-      //      std::cout << ",V";
-      //      output_hex(last_reg, 1);
-      //      std::cout << std::endl;
-      //      break;
-      //   }
- 
       //   case 0x0b:
       //   {
       //      uint16_t addr = instruction & 0x0fff;
@@ -343,7 +357,7 @@ bool chip8::chip8::execute_opcode()
 
 void chip8::chip8::clear_graphics_memory()
 {
-   std::fill(std::begin(m_gfx_memory), std::end(m_gfx_memory), 0xF);
+   std::fill(std::begin(m_gfx_memory), std::end(m_gfx_memory), 0);
 }
 
 void chip8::chip8::clear_memory()
