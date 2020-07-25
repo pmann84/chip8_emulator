@@ -18,6 +18,8 @@ namespace chip8
       // Get first bits, get last 8 bits, get last 12 bits
       byte_t upper_half_of_first_byte();
       byte_t lower_half_of_first_byte();
+      byte_t upper_half_of_last_byte();
+      byte_t lower_half_of_last_byte();
       byte_t last_byte();
       uint16_t get_last_12_bits();
 

@@ -22,3 +22,8 @@ bool chip8::emulator::should_draw()
 void chip8::emulator::set_keys()
 {
 }
+
+chip8::chip8::graphics_t chip8::emulator::display_data()
+{
+   return m_chip.display_data();
+}

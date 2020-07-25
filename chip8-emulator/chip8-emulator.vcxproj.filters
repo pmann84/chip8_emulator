@@ -6,6 +6,7 @@
     <ClCompile Include="opcode.cpp" />
     <ClCompile Include="chip8.cpp" />
     <ClCompile Include="opcode_executions.cpp" />
+    <ClCompile Include="application.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="chip8.h" />
@@ -13,5 +14,6 @@
     <ClInclude Include="constants.h" />
     <ClInclude Include="opcode.h" />
     <ClInclude Include="opcode_executions.h" />
+    <ClInclude Include="application.h" />
   </ItemGroup>
 </Project>

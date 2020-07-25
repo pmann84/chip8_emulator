@@ -15,6 +15,16 @@ chip8::byte_t chip8::opcode::lower_half_of_first_byte()
    return (m_code >> 8) & 0x0f;
 }
 
+chip8::byte_t chip8::opcode::upper_half_of_last_byte()
+{
+   return last_byte() >> 8;
+}
+
+chip8::byte_t chip8::opcode::lower_half_of_last_byte()
+{
+   return last_byte() & 0x0f;
+}
+
 chip8::byte_t chip8::opcode::last_byte()
 {
    return m_code & 0x00ff;
