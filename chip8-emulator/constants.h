@@ -64,6 +64,8 @@ namespace chip8
       }
       constexpr byte_t SKIP_NEQ_V = 0x9;
       constexpr byte_t MVI_I = 0xa;
+      constexpr byte_t JUMP_V = 0xb;
+      constexpr byte_t RAND_V = 0xc;
       constexpr byte_t SPRITE_V = 0xd;
       constexpr byte_t MISC = 0xf;
       namespace misc

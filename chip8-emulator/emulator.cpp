@@ -12,6 +12,7 @@ void chip8::emulator::load_program(std::filesystem::path path)
 void chip8::emulator::run_cycle()
 {
    m_draw_flag = m_chip.execute_opcode();
+   m_chip.update_timers();
 }
 
 bool chip8::emulator::should_draw()

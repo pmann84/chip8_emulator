@@ -5,14 +5,7 @@
 
 #include "application.h"
 
-//template<typename T>
-//void output_hex(T v, uint8_t padding=2)
-//{
-//   std::ios_base::fmtflags f(std::cout.flags());
-//   std::cout << std::hex << std::setw(padding) << std::setfill('0') << int(v);
-//   std::cout.flags(f);
-//}
-//
+
 //void decode_chip8_ops(chip8::buffer_t buffer)
 //{
 //   for (uint16_t i = 0; i < buffer.size(); i+=2)
@@ -23,9 +16,9 @@
 //   }
 //}
 
-int WinMain()
+int main(int argc, char* argv[])
 {
-   std::filesystem::path program_filepath("C:\\Projects\\chip8-emulator\\programs\\fishie.ch8");
+   std::filesystem::path program_filepath("C:\\Projects\\chip8-emulator\\programs\\tetris.ch8");
    
    app a;
    a.load_program(program_filepath);

@@ -2,6 +2,14 @@
 
 #include <fstream>
 
+template<typename T>
+void output_hex(T v, uint8_t padding=2)
+{
+   std::ios_base::fmtflags f(std::cout.flags());
+   std::cout << std::hex << std::setw(padding) << std::setfill('0') << int(v);
+   std::cout.flags(f);
+}
+
 chip8::chip8::chip8()
 {
    clear_graphics_memory();
@@ -42,6 +50,9 @@ bool chip8::chip8::execute_opcode()
 {
    // Fetch and decode
    opcode code = get_next_opcode();
+   std::cout << "Executing Opcode[";
+   output_hex(code.code(), 4);
+   std::cout << "]" << std::endl;
    // TODO: Execute - including setting program counter correctly
    switch (code.upper_half_of_first_byte())
    {
@@ -59,6 +70,7 @@ bool chip8::chip8::execute_opcode()
             m_program_ctr += 2;
             return false;
          default:
+            std::cout << "Skipping Opcode " << code << " not needed!" << std::endl;
             return false; // Code not needed
          }
       }
@@ -180,7 +192,21 @@ bool chip8::chip8::execute_opcode()
       {
          m_idx_register = code.get_last_12_bits();
          m_program_ctr += 2;
-         return true;
+         return false;
+      }
+      case opcode_defs::JUMP_V:
+      {
+         program_counter_t addr = code.get_last_12_bits();
+         m_program_ctr = addr + m_registers[0];
+         return false;
+      }
+      case opcode_defs::RAND_V:
+      {
+         uint8_t reg = code.lower_half_of_first_byte();
+         auto mask = code.last_byte();
+         m_registers[reg] = (rand() % (0xFF + 1)) & mask;
+         m_program_ctr += 2;
+         return false;
       }
       case opcode_defs::SPRITE_V:
       {
@@ -199,7 +225,7 @@ bool chip8::chip8::execute_opcode()
             pixel = m_memory[m_idx_register + y];
             for (int x = 0; x < 8; ++x)
             {
-               if (pixel & (0x80 >> x) != 0)
+               if ((pixel & (0x80 >> x)) != 0)
                {
                   auto gfx_mem_idx = first_reg + x + ((last_reg + y) * 64);
                   if (m_gfx_memory[gfx_mem_idx] == 1)
@@ -244,8 +270,6 @@ bool chip8::chip8::execute_opcode()
                   return false; // Try again until a key is pressed
 
                m_program_ctr += 2;
-               //std::cout << "WAITKEY V";
-               //output_hex(reg, 1);
                return false;
             }
             case opcode_defs::misc::MOV_DELAY_V:
@@ -298,6 +322,7 @@ bool chip8::chip8::execute_opcode()
                return false;
             }
             default:
+               std::cout << "Opcode " << code << " not supported!" << std::endl;
                return false; // Not supported
          }
          return false;
@@ -310,24 +335,7 @@ bool chip8::chip8::execute_opcode()
    }
 
 
-      //   case 0x0b:
-      //   {
-      //      uint16_t addr = instruction & 0x0fff;
-      //      std::cout << "JUMP ";
-      //      output_hex(addr, 3);
-      //      std::cout << "(V0)" << std::endl;
-      //      break;
-      //   }
-      //   case 0x0c:
-      //   {
-      //      uint8_t reg = first & 0x0f;
-      //      std::cout << "RAND V";
-      //      output_hex(reg, 1);
-      //      std::cout << ",";
-      //      output_hex(last);
-      //      std::cout << std::endl;
-      //      break;
-      //   }
+
       //   case 0x0e:
       //   {
       //      uint8_t reg = first & 0x0f;
@@ -353,6 +361,23 @@ bool chip8::chip8::execute_opcode()
       //      std::cout << "Not supported!" << std::endl;
       //      break;
       //   }
+}
+
+void chip8::chip8::update_timers()
+{
+   if (m_delay_timer > 0)
+   {
+      --m_delay_timer;
+   }
+
+   if (m_sound_timer > 0)
+   {
+      if (m_sound_timer == 1)
+      {
+         std::cout << "BEEP!" << std::endl;
+      }
+      --m_sound_timer;
+   }
 }
 
 void chip8::chip8::clear_graphics_memory()

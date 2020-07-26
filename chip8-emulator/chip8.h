@@ -25,8 +25,12 @@ namespace chip8
       chip8();
       void load_fontset();
       void load_program(std::filesystem::path path);
+
       opcode get_next_opcode();
       bool execute_opcode();           // Returns true for redraw
+
+      void update_timers();
+
       void clear_graphics_memory();
       void clear_memory();
       void clear_registers();
