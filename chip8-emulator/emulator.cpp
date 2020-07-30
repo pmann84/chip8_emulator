@@ -23,8 +23,9 @@ namespace chip8
       return m_draw_flag;
    }
 
-   void emulator::set_keys()
+   void emulator::set_keys(uint8_t index, bool pressed)
    {
+      m_chip.set_key(index, pressed ? 1 : 0);
    }
 
    graphics_t emulator::display_data()

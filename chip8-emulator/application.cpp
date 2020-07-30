@@ -45,12 +45,6 @@ void app::run()
    // TODO: Make this only execute at 60Hz, so 60 cycle executions per second
    while (m_is_running)
    {
-      // Check for any input
-      while (SDL_PollEvent(&m_poll_event) != 0)
-      {
-         m_is_running = !(m_poll_event.type == SDL_QUIT);
-      }
-
       // Run a cycle of the chip8 cpu - executes a single opcode
       m_emulator.run_cycle();
 
@@ -66,8 +60,32 @@ void app::run()
          SDL_UpdateTexture(m_texture, NULL, &pixels[0], 64 * 4);
       }
 
-      // TODO: Set any key presses here
-      m_emulator.set_keys();
+      // Check for any input and set any key presses here
+      while (SDL_PollEvent(&m_poll_event) != 0)
+      {
+         m_is_running = !(m_poll_event.type == SDL_QUIT);
+
+         if (m_poll_event.type == SDL_KEYDOWN)
+         {
+            for (uint8_t i = 0; i < 16; ++i)
+            {
+               if (m_poll_event.key.keysym.sym == key_map[i])
+               {
+                  m_emulator.set_keys(i, true);
+               }
+            }
+         }
+         if (m_poll_event.type == SDL_KEYUP)
+         {
+            for (uint8_t i = 0; i < 16; ++i)
+            {
+               if (m_poll_event.key.keysym.sym == key_map[i])
+               {
+                  m_emulator.set_keys(i, false);
+               }
+            }
+         }
+      }
 
       SDL_SetRenderDrawColor(m_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
       SDL_RenderClear(m_renderer);

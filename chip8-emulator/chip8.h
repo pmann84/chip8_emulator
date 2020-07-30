@@ -32,6 +32,8 @@ namespace chip8
       index_register_t get_index_register() const;
       byte_t get_register(byte_t index) const;
       void set_register(byte_t index, byte_t value);
+
+      void set_key(uint8_t key, uint8_t value);
       bool is_key_in_register_pressed(byte_t index);
       bool check_for_key_press(byte_t reg_idx);
 

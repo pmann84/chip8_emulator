@@ -14,7 +14,7 @@ namespace chip8
       void load_program(std::filesystem::path path);
       void run_cycle();
       bool should_draw();
-      void set_keys();
+      void set_keys(uint8_t index, bool pressed);
       graphics_t display_data();
 
    private:

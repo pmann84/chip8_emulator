@@ -11,6 +11,13 @@ constexpr uint32_t HEIGHT = 320;
 constexpr uint32_t SCREEN_COLOUR = 0x008f11;
 constexpr uint32_t BACKGROUND_COLOUR = 0x0;
 
+constexpr chip8::byte_t key_map[16] = {
+   SDLK_x, SDLK_1, SDLK_2, SDLK_3, // 1, 2, 3, C
+   SDLK_q, SDLK_w, SDLK_e, SDLK_a, // 4, 5, 6, D
+   SDLK_s, SDLK_d, SDLK_z, SDLK_c, // 7, 8, 9, E
+   SDLK_4, SDLK_r, SDLK_f, SDLK_v  // A, 0, B, F
+};
+
 inline void log_sdl_error(std::ostream& os, const std::string& message)
 {
    os << message << " error: " << SDL_GetError() << std::endl;

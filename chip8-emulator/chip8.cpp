@@ -92,6 +92,11 @@ namespace chip8
       m_registers[index] = value;
    }
 
+   void cpu::set_key(uint8_t key, uint8_t value)
+   {
+      m_keys[key] = value;
+   }
+
    bool cpu::is_key_in_register_pressed(byte_t index)
    {
       return  m_keys[m_registers[index]] != 0;
