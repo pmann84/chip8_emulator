@@ -15,10 +15,10 @@ namespace chip8
       void run_cycle();
       bool should_draw();
       void set_keys();
-      chip8::graphics_t display_data();
+      graphics_t display_data();
 
    private:
-      chip8 m_chip;
+      cpu m_chip;
       bool m_draw_flag;
    };
 }

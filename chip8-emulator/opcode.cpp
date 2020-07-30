@@ -1,41 +1,44 @@
 #include "opcode.h"
 
-chip8::opcode::opcode(chip8::byte_t first, chip8::byte_t last)
+namespace chip8
 {
-   m_code = (first << 8) | last;
-}
+   opcode::opcode(chip8::byte_t first, chip8::byte_t last)
+   {
+      m_code = (first << 8) | last;
+   }
 
-chip8::byte_t chip8::opcode::upper_half_of_first_byte()
-{
-   return m_code >> 12;
-}
+   byte_t opcode::upper_half_of_first_byte() const
+   {
+      return m_code >> 12;
+   }
 
-chip8::byte_t chip8::opcode::lower_half_of_first_byte()
-{
-   return (m_code >> 8) & 0x0f;
-}
+   byte_t opcode::lower_half_of_first_byte() const
+   {
+      return (m_code >> 8) & 0x0f;
+   }
 
-chip8::byte_t chip8::opcode::upper_half_of_last_byte()
-{
-   return last_byte() >> 8;
-}
+   byte_t opcode::upper_half_of_last_byte() const
+   {
+      return last_byte() >> 4;
+   }
 
-chip8::byte_t chip8::opcode::lower_half_of_last_byte()
-{
-   return last_byte() & 0x0f;
-}
+   byte_t opcode::lower_half_of_last_byte() const
+   {
+      return last_byte() & 0x0f;
+   }
 
-chip8::byte_t chip8::opcode::last_byte()
-{
-   return m_code & 0x00ff;
-}
+   byte_t opcode::last_byte() const
+   {
+      return m_code & 0x00ff;
+   }
 
-uint16_t chip8::opcode::get_last_12_bits()
-{
-   return m_code & 0x0fff;
-}
+   uint16_t opcode::get_last_12_bits() const
+   {
+      return m_code & 0x0fff;
+   }
 
-chip8::opcode::opcode_t chip8::opcode::code()
-{
-   return m_code;
+   opcode::opcode_t opcode::code() const
+   {
+      return m_code;
+   }
 }

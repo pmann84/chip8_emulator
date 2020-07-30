@@ -1,30 +1,34 @@
 #include "emulator.h"
 
-chip8::emulator::emulator() : m_draw_flag(false)
+namespace chip8
 {
-}
 
-void chip8::emulator::load_program(std::filesystem::path path)
-{
-   m_chip.load_program(path);
-}
+   emulator::emulator() : m_draw_flag(false)
+   {
+   }
 
-void chip8::emulator::run_cycle()
-{
-   m_draw_flag = m_chip.execute_opcode();
-   m_chip.update_timers();
-}
+   void emulator::load_program(std::filesystem::path path)
+   {
+      m_chip.load_program(path);
+   }
 
-bool chip8::emulator::should_draw()
-{
-   return m_draw_flag;
-}
+   void emulator::run_cycle()
+   {
+      m_draw_flag = m_chip.execute_opcode();
+      m_chip.update_timers();
+   }
 
-void chip8::emulator::set_keys()
-{
-}
+   bool emulator::should_draw()
+   {
+      return m_draw_flag;
+   }
 
-chip8::chip8::graphics_t chip8::emulator::display_data()
-{
-   return m_chip.display_data();
+   void emulator::set_keys()
+   {
+   }
+
+   graphics_t emulator::display_data()
+   {
+      return m_chip.display_data();
+   }
 }

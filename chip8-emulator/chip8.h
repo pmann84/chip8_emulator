@@ -1,5 +1,6 @@
 #pragma once
 
+#include "opcode_executions.h"
 #include "constants.h"
 #include "opcode.h"
 
@@ -12,22 +13,38 @@ namespace chip8
    // 0x000 - 0x1FF - Chip 8 interpreter(contains font set in emu)
    // 0x050 - 0x0A0 - Used for the built in 4x5 pixel font set(0 - F)
    // 0x200 - 0xFFF - Program ROM and work RAM
-   class chip8
+   class cpu
    {
    public:
-      // Chipset typedefs
-      using memory_t = std::array<byte_t, MAX_MEMORY>;         // represents memory structure
-      using graphics_t = std::array<byte_t, MAX_GFX_MEMORY>;   // graphics memory structure
-      using index_register_t = uint16_t;                       // Index register base type
-      using program_counter_t = uint16_t;                      // Base type for program counter must be able to hold 4096 entries
-      using stack_ptr_t = uint16_t;                            // Base type for stack pointer
-
-      chip8();
+      cpu();
       void load_fontset();
       void load_program(std::filesystem::path path);
 
       opcode get_next_opcode();
       bool execute_opcode();           // Returns true for redraw
+
+      // Convenience functions for opcode implementation
+      void set_program_counter(program_counter_t ctr);
+      void increment_program_counter(program_counter_t increment_amount);
+      void store_program_counter_in_stack();
+      void set_program_counter_from_stack();
+      void set_index_register(index_register_t idx_reg);
+      index_register_t get_index_register() const;
+      byte_t get_register(byte_t index) const;
+      void set_register(byte_t index, byte_t value);
+      bool is_key_in_register_pressed(byte_t index);
+      bool check_for_key_press(byte_t reg_idx);
+
+      byte_t get_value_of_memory_at_location(uint16_t index) const;
+      void set_value_of_memory_at_location(uint16_t index, byte_t value);
+
+      byte_t get_value_of_gfx_memory_at_location(uint16_t index) const;
+      void set_value_of_gfx_memory_at_location(uint16_t index, byte_t value);
+
+      byte_t get_delay_timer() const;
+      void set_delay_timer(byte_t value);
+      byte_t get_sound_timer() const;
+      void set_sound_timer(byte_t value);
 
       void update_timers();
 

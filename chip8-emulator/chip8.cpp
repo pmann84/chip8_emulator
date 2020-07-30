@@ -2,406 +2,195 @@
 
 #include <fstream>
 
-template<typename T>
-void output_hex(T v, uint8_t padding=2)
-{
-   std::ios_base::fmtflags f(std::cout.flags());
-   std::cout << std::hex << std::setw(padding) << std::setfill('0') << int(v);
-   std::cout.flags(f);
-}
+#include "opcode_executions.h"
 
-chip8::chip8::chip8()
+namespace chip8
 {
-   clear_graphics_memory();
-   clear_memory();
-   clear_registers();
-   clear_keys();
-   load_fontset();
-}
 
-void chip8::chip8::load_fontset()
-{
-   // Load fontset
-   for (int i = 0; i < 80; ++i)
+   cpu::cpu()
    {
-      m_memory[i] = fontset[i];
+      clear_graphics_memory();
+      clear_memory();
+      clear_registers();
+      clear_keys();
+      load_fontset();
    }
-}
 
-void chip8::chip8::load_program(std::filesystem::path path)
-{
-   std::basic_ifstream<unsigned char> program(path, std::ios::out | std::ios::binary);
-   // Get the file size
-   program.seekg(0, program.end);
-   uint16_t program_size = program.tellg();
-   program.seekg(0, program.beg);
-   program.read(&m_memory[CHIP8_MEMORY_START], program_size);
-   program.close();
-   std::cout << "Program Loaded. Size: " << program_size << "b" << std::endl;
-}
-
-chip8::opcode chip8::chip8::get_next_opcode()
-{
-   // Gets the next opcode from memory that should be executed
-   return opcode(m_memory[m_program_ctr], m_memory[m_program_ctr + 1]);
-}
-
-bool chip8::chip8::execute_opcode()
-{
-   // Fetch and decode
-   opcode code = get_next_opcode();
-   std::cout << "Executing Opcode[";
-   output_hex(code.code(), 4);
-   std::cout << "]" << std::endl;
-   // TODO: Execute - including setting program counter correctly
-   switch (code.upper_half_of_first_byte())
+   void cpu::load_fontset()
    {
-      case opcode_defs::SPECIAL:
+      // Load fontset
+      for (int i = 0; i < 80; ++i)
       {
-         switch (code.code())
+         m_memory[i] = fontset[i];
+      }
+   }
+
+   void cpu::load_program(std::filesystem::path path)
+   {
+      std::basic_ifstream<unsigned char> program(path, std::ios::out | std::ios::binary);
+      // Get the file size
+      program.seekg(0, program.end);
+      uint16_t program_size = program.tellg();
+      program.seekg(0, program.beg);
+      program.read(&m_memory[CHIP8_MEMORY_START], program_size);
+      program.close();
+      std::cout << "Program Loaded. Size: " << program_size << "b" << std::endl;
+   }
+
+   opcode cpu::get_next_opcode()
+   {
+      // Gets the next opcode from memory that should be executed
+      return opcode(m_memory[m_program_ctr], m_memory[m_program_ctr + 1]);
+   }
+
+   bool cpu::execute_opcode()
+   {
+      // Fetch and decode
+      opcode code = get_next_opcode();
+      std::cout << "Executing Opcode [" << code << "]" << std::endl;
+      return chip_table[code.upper_half_of_first_byte()](code, *this);
+   }
+
+   void cpu::set_program_counter(program_counter_t ctr)
+   {
+      m_program_ctr = ctr;
+   }
+
+   void cpu::increment_program_counter(program_counter_t increment_amount)
+   {
+      m_program_ctr += increment_amount;
+   }
+
+   void cpu::store_program_counter_in_stack()
+   {
+      m_stack[m_stack_ptr++] = m_program_ctr;
+   }
+
+   void cpu::set_program_counter_from_stack()
+   {
+      --m_stack_ptr;
+      m_program_ctr = m_stack[m_stack_ptr];
+   }
+
+   void cpu::set_index_register(index_register_t idx_reg)
+   {
+      m_idx_register = idx_reg;
+   }
+
+   index_register_t cpu::get_index_register() const
+   {
+      return m_idx_register;
+   }
+
+   byte_t cpu::get_register(byte_t index) const
+   {
+      return m_registers[index];
+   }
+
+   void cpu::set_register(byte_t index, byte_t value)
+   {
+      m_registers[index] = value;
+   }
+
+   bool cpu::is_key_in_register_pressed(byte_t index)
+   {
+      return  m_keys[m_registers[index]] != 0;
+   }
+
+   bool cpu::check_for_key_press(byte_t reg_idx)
+   {
+      bool key_pressed = false;
+      for (int i = 0; i < 16; ++i)
+      {
+         if (m_keys[i] != 0)
          {
-         case opcode_defs::CLS:
-            clear_graphics_memory();
-            m_program_ctr += 2;
-            return true;
-         case opcode_defs::RTS:
-            --m_stack_ptr;
-            m_program_ctr = m_stack[m_stack_ptr];
-            m_program_ctr += 2;
-            return false;
-         default:
-            std::cout << "Skipping Opcode " << code << " not needed!" << std::endl;
-            return false; // Code not needed
+            m_registers[reg_idx] = i;
+            key_pressed = true;
          }
       }
-      case opcode_defs::JUMP:
+      return key_pressed;
+   }
+
+   byte_t cpu::get_value_of_memory_at_location(uint16_t index) const 
+   {
+      return m_memory[index];
+   }
+
+   void cpu::set_value_of_memory_at_location(uint16_t index, byte_t value)
+   {
+      m_memory[index] = value;
+   }
+
+   byte_t cpu::get_value_of_gfx_memory_at_location(uint16_t index) const
+   {
+      return m_gfx_memory[index];
+   }
+
+   void cpu::set_value_of_gfx_memory_at_location(uint16_t index, byte_t value)
+   {
+      m_gfx_memory[index] = value;
+   }
+
+   byte_t cpu::get_delay_timer() const
+   {
+      return m_delay_timer;
+   }
+
+   void cpu::set_delay_timer(byte_t value)
+   {
+      m_delay_timer = value;
+   }
+
+   byte_t cpu::get_sound_timer() const
+   {
+      return m_sound_timer;
+   }
+
+   void cpu::set_sound_timer(byte_t value)
+   {
+      m_sound_timer = value;
+   }
+
+   void cpu::update_timers()
+   {
+      if (m_delay_timer > 0)
       {
-         program_counter_t addr = code.get_last_12_bits();
-         m_program_ctr = addr;
-         return false;
+         --m_delay_timer;
       }
-      case opcode_defs::CALL:
+
+      if (m_sound_timer > 0)
       {
-         program_counter_t addr = code.get_last_12_bits();
-         m_stack[m_stack_ptr++] = m_program_ctr;
-         m_program_ctr = addr;
-         return false;
-      }
-      case opcode_defs::SKIP_EQ:
-      {
-         auto reg = code.lower_half_of_first_byte();
-         auto value = code.last_byte();
-         m_program_ctr += m_registers[reg] == value ? 4 : 2;
-         return false;
-      }
-      case opcode_defs::SKIP_NEQ:
-      {
-         auto reg = code.lower_half_of_first_byte();
-         auto value = code.last_byte();
-         m_program_ctr += m_registers[reg] != value ? 4 : 2;
-         return false;
-      }
-      case opcode_defs::SKIP_EQ_V:
-      {
-         uint8_t first_reg = code.lower_half_of_first_byte();
-         uint8_t last_reg = code.upper_half_of_last_byte();
-         m_program_ctr += m_registers[first_reg] == m_registers[last_reg] ? 4 : 2;
-         return false;
-      }
-      case opcode_defs::MVI_V:
-      {
-         auto reg = code.lower_half_of_first_byte();
-         auto value = code.last_byte();
-         m_registers[reg] = value;
-         m_program_ctr += 2;
-         return false;
-      }
-      case opcode_defs::ADD_V:
-      {
-         auto reg = code.lower_half_of_first_byte();
-         auto value = code.last_byte();
-         auto& rregister = m_registers[reg];
-         rregister += value;
-         m_program_ctr += 2;
-         return false;
-      }
-      case opcode_defs::COMP:
-      {
-         // Get the last bit to get the operation
-         uint8_t operation = code.lower_half_of_last_byte();
-         // get registers
-         uint8_t first_reg = code.lower_half_of_first_byte();
-         uint8_t last_reg = code.upper_half_of_last_byte();
-         switch (operation)
+         if (m_sound_timer == 1)
          {
-         case opcode_defs::comp::MOV_V:
-            m_registers[first_reg] = m_registers[last_reg];
-            return false;
-         case opcode_defs::comp::OR_V:
-            m_registers[first_reg] |= m_registers[last_reg];
-            return false;
-         case opcode_defs::comp::AND_V:
-            m_registers[first_reg] &= m_registers[last_reg];
-            return false;
-         case opcode_defs::comp::XOR_V:
-            m_registers[first_reg] ^= m_registers[last_reg];
-            return false;
-         case opcode_defs::comp::ADD_C_V:
-            if (m_registers[last_reg] > (0xFF - m_registers[first_reg]))
-               m_registers[0xF] = 1; //carry
-            else
-               m_registers[0xF] = 0;
-            m_registers[first_reg] += m_registers[last_reg];
-            return false;
-         case opcode_defs::comp::SUB_C_V:
-            if (m_registers[last_reg] > m_registers[first_reg])
-               m_registers[0xF] = 1; //carry
-            else
-               m_registers[0xF] = 0;
-            m_registers[first_reg] -= m_registers[last_reg];
-            return false;
-         case opcode_defs::comp::SHR_C_V:
-            m_registers[0xF] = m_registers[first_reg] & 0x1;
-            m_registers[first_reg] >>= 1;
-            return false;
-         case opcode_defs::comp::SUBB_C_V:
-            if (m_registers[first_reg] > m_registers[last_reg])	// VY-VX
-               m_registers[0xF] = 0; // there is a borrow
-            else
-               m_registers[0xF] = 1;
-            m_registers[first_reg] = m_registers[last_reg] - m_registers[first_reg];
-            return false;
-         case opcode_defs::comp::SHL_C_V:
-            m_registers[0xF] = m_registers[first_reg] >> 7;
-            m_registers[first_reg] <<= 1;
-            return false;
-         default:
-            std::cout << "Not supported!" << std::endl;
-            return false;
+            std::cout << "BEEP!" << std::endl;
          }
-         m_program_ctr += 2;
-      }
-      case opcode_defs::SKIP_NEQ_V:
-      {
-         uint8_t first_reg = code.lower_half_of_first_byte();
-         uint8_t last_reg = code.upper_half_of_last_byte();
-         m_program_ctr += m_registers[first_reg] != m_registers[last_reg] ? 4 : 2;
-         return false;
-      }
-      case opcode_defs::MVI_I:
-      {
-         m_idx_register = code.get_last_12_bits();
-         m_program_ctr += 2;
-         return false;
-      }
-      case opcode_defs::JUMP_V:
-      {
-         program_counter_t addr = code.get_last_12_bits();
-         m_program_ctr = addr + m_registers[0];
-         return false;
-      }
-      case opcode_defs::RAND_V:
-      {
-         uint8_t reg = code.lower_half_of_first_byte();
-         auto mask = code.last_byte();
-         m_registers[reg] = (rand() % (0xFF + 1)) & mask;
-         m_program_ctr += 2;
-         return false;
-      }
-      case opcode_defs::SPRITE_V:
-      {
-         // TODO: Draws a sprite at coordinate (VX, VY) that has a width of 8 pixels and a height of N pixels. Each row of 8 pixels is read as bit-coded starting from memory location I; I value doesn’t change after the execution of this instruction. As described above, VF is set to 1 if any screen pixels are flipped from set to unset when the sprite is drawn, and to 0 if that doesn’t happen
-         // Draw a sprite at position VX, VY with N bytes of sprite data starting at the address stored in I
-         // Set VF to 01 if any set pixels are changed to unset, and 00 otherwise
-         uint8_t first_reg = code.lower_half_of_first_byte();
-         uint8_t last_reg = code.upper_half_of_last_byte();
-         uint8_t height = code.lower_half_of_last_byte();
-         uint8_t pixel;
-
-         m_registers[0xf] = 0;
-
-         for (int y = 0; y < height; ++y)
-         {
-            pixel = m_memory[m_idx_register + y];
-            for (int x = 0; x < 8; ++x)
-            {
-               if ((pixel & (0x80 >> x)) != 0)
-               {
-                  auto gfx_mem_idx = first_reg + x + ((last_reg + y) * 64);
-                  if (m_gfx_memory[gfx_mem_idx] == 1)
-                  {
-                     m_registers[0xf] = 1;
-                  }
-                  m_gfx_memory[gfx_mem_idx] ^= 1;
-               }
-            }
-         }
-
-         m_program_ctr += 2;
-         return true;
-      }
-      case opcode_defs::MISC:
-      {
-         uint8_t reg = code.lower_half_of_first_byte();
-         auto last_byte = code.last_byte();
-         switch (last_byte)
-         {
-            case opcode_defs::misc::MOV_V_DELAY:
-            {
-               m_registers[reg] = m_delay_timer;
-               m_program_ctr += 2;
-               return false;
-            }
-            case opcode_defs::misc::WAITKEY_V:
-            {
-               // Blocking on key press
-               bool key_press = false;
-
-               for (int i = 0; i < 16; ++i)
-               {
-                  if (m_keys[i] != 0)
-                  {
-                     m_registers[reg] = i;
-                     key_press = true;
-                  }
-               }
-
-               if (!key_press)
-                  return false; // Try again until a key is pressed
-
-               m_program_ctr += 2;
-               return false;
-            }
-            case opcode_defs::misc::MOV_DELAY_V:
-            {
-               m_delay_timer = m_registers[reg];
-               m_program_ctr += 2;
-               return false;
-            }
-            case opcode_defs::misc::MOV_SOUND_V:
-            {
-               m_sound_timer = m_registers[reg];
-               m_program_ctr += 2;
-               return false;
-            }
-            case opcode_defs::misc::ADD_I_V:
-            {
-               m_idx_register = m_registers[reg];
-               m_program_ctr += 2;
-               return false;
-            }
-            case opcode_defs::misc::SPRITECHAR_V:
-            {
-               m_idx_register = m_registers[reg] * 0x5;
-               m_program_ctr += 2;
-               return false;
-            }
-            case opcode_defs::misc::MOVBCD_V:
-            {
-               m_memory[m_idx_register] = m_registers[reg] / 100;
-               m_memory[m_idx_register + 1] = (m_registers[reg] / 10) % 10;
-               m_memory[m_idx_register + 2] = (m_registers[reg] % 100) % 10;
-               m_program_ctr += 2;
-            }
-            case opcode_defs::misc::MOVM_I:
-            {
-               for (int i = 0; i <= reg; ++i)
-               {
-                  m_memory[m_idx_register + i] = m_registers[i];
-               }
-               m_program_ctr += 2;
-               return false;
-            }
-            case opcode_defs::misc::MOVM:
-            {
-               for (int i = 0; i <= reg; ++i)
-               {
-                  m_registers[i] = m_memory[m_idx_register + i];
-               }
-               m_program_ctr += 2;
-               return false;
-            }
-            default:
-               std::cout << "Opcode " << code << " not supported!" << std::endl;
-               return false; // Not supported
-         }
-         return false;
-      }
-      default:
-      {
-         std::cout << "Opcode " << code << " not supported!" << std::endl;
-         return false;
+         --m_sound_timer;
       }
    }
 
-
-
-      //   case 0x0e:
-      //   {
-      //      uint8_t reg = first & 0x0f;
-      //      switch (last)
-      //      {
-      //         case 0x9e:
-      //         {
-      //            std::cout << "SKIP.KEY V";
-      //            output_hex(reg, 1);
-      //            break;
-      //         }
-      //         case 0xa1:
-      //         {
-      //            std::cout << "SKIP.NOKEY V";
-      //            output_hex(reg, 1);
-      //            break;
-      //         }
-      //      }
-      //      std::cout << std::endl;
-      //      break;
-      //   }
-      //   default:
-      //      std::cout << "Not supported!" << std::endl;
-      //      break;
-      //   }
-}
-
-void chip8::chip8::update_timers()
-{
-   if (m_delay_timer > 0)
+   void cpu::clear_graphics_memory()
    {
-      --m_delay_timer;
+      std::fill(std::begin(m_gfx_memory), std::end(m_gfx_memory), 0);
    }
 
-   if (m_sound_timer > 0)
+   void cpu::clear_memory()
    {
-      if (m_sound_timer == 1)
+      std::fill(std::begin(m_memory), std::end(m_memory), 0);
+   }
+
+   void cpu::clear_registers()
+   {
+      for (uint8_t i = 0; i < 16; i++)
       {
-         std::cout << "BEEP!" << std::endl;
+         m_registers[i] = 0;
       }
-      --m_sound_timer;
    }
-}
 
-void chip8::chip8::clear_graphics_memory()
-{
-   std::fill(std::begin(m_gfx_memory), std::end(m_gfx_memory), 0);
-}
-
-void chip8::chip8::clear_memory()
-{
-   std::fill(std::begin(m_memory), std::end(m_memory), 0);
-}
-
-void chip8::chip8::clear_registers()
-{
-   for (uint8_t i = 0; i < 16; i++)
+   void cpu::clear_keys()
    {
-      m_registers[i] = 0;
-   }
-}
-
-void chip8::chip8::clear_keys()
-{
-   for (uint8_t i = 0; i < 16; i++)
-   {
-      m_keys[i] = 0;
+      for (uint8_t i = 0; i < 16; i++)
+      {
+         m_keys[i] = 0;
+      }
    }
 }
