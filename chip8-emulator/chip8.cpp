@@ -34,7 +34,7 @@ namespace chip8
       program.seekg(0, program.beg);
       program.read(&m_memory[CHIP8_MEMORY_START], program_size);
       program.close();
-      std::cout << "Program Loaded. Size: " << program_size << "b" << std::endl;
+      //std::cout << "Program Loaded. Size: " << program_size << "b" << std::endl;
    }
 
    opcode cpu::get_next_opcode()
@@ -47,7 +47,7 @@ namespace chip8
    {
       // Fetch and decode
       opcode code = get_next_opcode();
-      std::cout << "Executing Opcode [" << code << "]" << std::endl;
+      //std::cout << "Executing Opcode [" << code << "]" << std::endl;
       return chip_table[code.upper_half_of_first_byte()](code, *this);
    }
 
@@ -167,7 +167,7 @@ namespace chip8
       {
          if (m_sound_timer == 1)
          {
-            std::cout << "BEEP!" << std::endl;
+            //std::cout << "BEEP!" << std::endl;
          }
          --m_sound_timer;
       }

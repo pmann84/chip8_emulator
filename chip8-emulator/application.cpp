@@ -48,18 +48,6 @@ void app::run()
       // Run a cycle of the chip8 cpu - executes a single opcode
       m_emulator.run_cycle();
 
-      if (m_emulator.should_draw())
-      {
-         // Draw to the screen
-         auto pixel_data = m_emulator.display_data();
-         Uint32 pixels[64 * 32];
-         for (int i = 0; i < (64 * 32); i++)
-         {
-            pixels[i] = pixel_data[i] ? SCREEN_COLOUR : BACKGROUND_COLOUR;
-         }
-         SDL_UpdateTexture(m_texture, NULL, &pixels[0], 64 * 4);
-      }
-
       // Check for any input and set any key presses here
       while (SDL_PollEvent(&m_poll_event) != 0)
       {
@@ -87,9 +75,20 @@ void app::run()
          }
       }
 
-      SDL_SetRenderDrawColor(m_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-      SDL_RenderClear(m_renderer);
-      SDL_RenderCopy(m_renderer, m_texture, NULL, NULL);
-      SDL_RenderPresent(m_renderer);
+      if (m_emulator.should_draw())
+      {
+         // Draw to the screen
+         auto pixel_data = m_emulator.display_data();
+         Uint32 pixels[64 * 32];
+         for (int i = 0; i < (64 * 32); i++)
+         {
+            pixels[i] = pixel_data[i] ? SCREEN_COLOUR : BACKGROUND_COLOUR;
+         }
+         SDL_UpdateTexture(m_texture, NULL, &pixels[0], 64 * 4);
+         SDL_SetRenderDrawColor(m_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+         SDL_RenderClear(m_renderer);
+         SDL_RenderCopy(m_renderer, m_texture, NULL, NULL);
+         SDL_RenderPresent(m_renderer);
+      }
    }
 }
