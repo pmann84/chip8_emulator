@@ -1,3 +1,5 @@
 vendor
 x64 
 .vs
+
+*.vcxproj.user

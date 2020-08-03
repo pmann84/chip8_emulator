@@ -2,6 +2,7 @@
 
 #include <string>
 #include <ostream>
+#include <map>
 #include <SDL.h>
 
 #include "emulator.h"
@@ -11,11 +12,11 @@ constexpr uint32_t HEIGHT = 320;
 constexpr uint32_t SCREEN_COLOUR = 0x008f11;
 constexpr uint32_t BACKGROUND_COLOUR = 0x0;
 
-constexpr chip8::byte_t key_map[16] = {
-   SDLK_x, SDLK_1, SDLK_2, SDLK_3, // 1, 2, 3, C
-   SDLK_q, SDLK_w, SDLK_e, SDLK_a, // 4, 5, 6, D
-   SDLK_s, SDLK_d, SDLK_z, SDLK_c, // 7, 8, 9, E
-   SDLK_4, SDLK_r, SDLK_f, SDLK_v  // A, 0, B, F
+const std::map<SDL_Keycode, chip8::byte_t> key_map = { 
+   {SDLK_x, 0x0}, {SDLK_1, 0x1}, {SDLK_2, 0x2}, {SDLK_3, 0x3},
+   {SDLK_q, 0x4}, {SDLK_w, 0x5}, {SDLK_e, 0x6}, {SDLK_a, 0x7},
+   {SDLK_s, 0x8}, {SDLK_d, 0x9}, {SDLK_z, 0xa}, {SDLK_c, 0xb},
+   {SDLK_4, 0xc}, {SDLK_r, 0xd}, {SDLK_f, 0xe}, {SDLK_v, 0xf}
 };
 
 inline void log_sdl_error(std::ostream& os, const std::string& message)
@@ -29,7 +30,7 @@ public:
    app();
    ~app();
 
-   void load_program(std::filesystem::path program_filepath);
+   bool load_program(std::filesystem::path program_filepath);
    void run();
 
 private:

@@ -9,11 +9,7 @@ namespace chip8
 
    cpu::cpu()
    {
-      clear_graphics_memory();
-      clear_memory();
-      clear_registers();
-      clear_keys();
-      load_fontset();
+      reload();
    }
 
    void cpu::load_fontset()
@@ -25,8 +21,12 @@ namespace chip8
       }
    }
 
-   void cpu::load_program(std::filesystem::path path)
+   bool cpu::load_program(std::filesystem::path path)
    {
+      if (!std::filesystem::exists(path))
+      {
+         return false;
+      }
       std::basic_ifstream<unsigned char> program(path, std::ios::out | std::ios::binary);
       // Get the file size
       program.seekg(0, program.end);
@@ -34,7 +34,7 @@ namespace chip8
       program.seekg(0, program.beg);
       program.read(&m_memory[CHIP8_MEMORY_START], program_size);
       program.close();
-      //std::cout << "Program Loaded. Size: " << program_size << "b" << std::endl;
+      return true;
    }
 
    opcode cpu::get_next_opcode()
@@ -47,7 +47,6 @@ namespace chip8
    {
       // Fetch and decode
       opcode code = get_next_opcode();
-      //std::cout << "Executing Opcode [" << code << "]" << std::endl;
       return chip_table[code.upper_half_of_first_byte()](code, *this);
    }
 
@@ -197,5 +196,33 @@ namespace chip8
       {
          m_keys[i] = 0;
       }
+   }
+
+   void cpu::clear_stack()
+   {
+      for (uint8_t i = 0; i < 16; i++)
+      {
+         m_stack[i] = 0;
+      }
+   }
+
+   void cpu::reset_counters()
+   {
+      m_idx_register = 0;
+      m_stack_ptr = 0;
+      m_program_ctr = CHIP8_MEMORY_START;
+      m_delay_timer = 0;
+      m_sound_timer = 0;
+   }
+
+   void cpu::reload()
+   {
+      clear_graphics_memory();
+      clear_memory();
+      clear_registers();
+      clear_stack();
+      clear_keys();
+      reset_counters();
+      load_fontset();
    }
 }

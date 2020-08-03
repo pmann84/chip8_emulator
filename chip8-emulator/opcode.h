@@ -14,8 +14,7 @@ namespace chip8
 
       opcode(byte_t first, byte_t last);
 
-      // TODO: Useful bit operations
-      // Get first bits, get last 8 bits, get last 12 bits
+      // Bit operations
       byte_t upper_half_of_first_byte() const;
       byte_t lower_half_of_first_byte() const;
       byte_t upper_half_of_last_byte() const;

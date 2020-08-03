@@ -5,7 +5,6 @@ app::app() : m_is_running(false)
    if (SDL_Init(SDL_INIT_VIDEO) != 0)
    {
       log_sdl_error(std::cout, "SDL_Init");
-      // TODO: Improve this
       return;
    }
 
@@ -34,43 +33,69 @@ app::~app()
    SDL_Quit();
 }
 
-void app::load_program(std::filesystem::path program_filepath)
+bool app::load_program(std::filesystem::path program_filepath)
 {
-   m_emulator.load_program(program_filepath);
+   return m_emulator.load_program(program_filepath);
 }
 
 void app::run()
 {
    m_is_running = true;
-   // TODO: Make this only execute at 60Hz, so 60 cycle executions per second
    while (m_is_running)
    {
-      // Run a cycle of the chip8 cpu - executes a single opcode
-      m_emulator.run_cycle();
+      // Run 9 cycles (500 = 60 * 9) cycle of the cpu - for this 
+      // simple emulator we just sleep for a scalable period of 
+      // ms at the end of the loop to make a better user experience
+      for (int i = 0; i < 9; ++i)
+      {
+         m_emulator.run_cycle();
+      }
 
       // Check for any input and set any key presses here
       while (SDL_PollEvent(&m_poll_event) != 0)
       {
-         m_is_running = !(m_poll_event.type == SDL_QUIT);
-
-         if (m_poll_event.type == SDL_KEYDOWN)
+         switch (m_poll_event.type)
          {
-            for (uint8_t i = 0; i < 16; ++i)
+            case SDL_QUIT:
             {
-               if (m_poll_event.key.keysym.sym == key_map[i])
-               {
-                  m_emulator.set_keys(i, true);
-               }
+               m_is_running = false;
+               break;
             }
-         }
-         if (m_poll_event.type == SDL_KEYUP)
-         {
-            for (uint8_t i = 0; i < 16; ++i)
+            case SDL_KEYDOWN:
             {
-               if (m_poll_event.key.keysym.sym == key_map[i])
+               switch (m_poll_event.key.keysym.sym)
                {
-                  m_emulator.set_keys(i, false);
+                  case SDLK_LEFTBRACKET:
+                  {
+                     m_emulator.decrease_speed();
+                     break;
+                  }
+                  case SDLK_RIGHTBRACKET:
+                  {
+                     m_emulator.increase_speed();
+                     break;
+                  }
+                  case SDLK_F5:
+                  {
+                     m_emulator.reload();
+                     break;
+                  }
                }
+               auto key_it = key_map.find(m_poll_event.key.keysym.sym);
+               if (key_it != key_map.end())
+               {
+                  m_emulator.set_keys(key_it->second, true);
+               }
+               break;
+            }
+            case SDL_KEYUP:
+            {
+               auto key_it = key_map.find(m_poll_event.key.keysym.sym);
+               if (key_it != key_map.end())
+               {
+                  m_emulator.set_keys(key_it->second, false);
+               }
+               break;
             }
          }
       }
@@ -89,6 +114,10 @@ void app::run()
          SDL_RenderClear(m_renderer);
          SDL_RenderCopy(m_renderer, m_texture, NULL, NULL);
          SDL_RenderPresent(m_renderer);
+         m_emulator.reset_draw_flag();
       }
+
+      m_emulator.update_timers();
+      m_emulator.sleep();
    }
 }

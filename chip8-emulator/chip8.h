@@ -18,7 +18,7 @@ namespace chip8
    public:
       cpu();
       void load_fontset();
-      void load_program(std::filesystem::path path);
+      bool load_program(std::filesystem::path path);
 
       opcode get_next_opcode();
       bool execute_opcode();           // Returns true for redraw
@@ -54,6 +54,10 @@ namespace chip8
       void clear_memory();
       void clear_registers();
       void clear_keys();
+      void clear_stack();
+      void reset_counters();
+
+      void reload();
 
       graphics_t display_data() { return m_gfx_memory; }
 

@@ -11,6 +11,8 @@ namespace chip8
    constexpr uint16_t CHIP8_MEMORY_START = 0x200;
    constexpr uint16_t CHIP8_MEMORY_END = 0xFFF;
    constexpr uint16_t OPCODE_SIZE = 2;
+   constexpr float REFRESH_RATE = 60.0f; // Hz
+   constexpr float CPU_SPEED = 540.0f; // Hz
 
    // Common Typedefs
    using byte_t = unsigned char; // Represents 1 byte of memory
