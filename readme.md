@@ -7,7 +7,7 @@ This is a basic Chip8 emulator written in C++ with simple graphical output using
 * SDL
 * C++
 
-# Keypad
+## Keypad
 The keypad maps the hex keypad to modern keyboards as follows
 
 ```
@@ -21,3 +21,7 @@ The keypad maps the hex keypad to modern keyboards as follows
     | A | 0 | B | F |           | Z | X | C | V |
     +---+---+---+---+           +---+---+---+---+
 ```
+
+## Example Tetris ROM
+
+![alt text](../media/tetris.gif?raw=true)
