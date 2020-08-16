@@ -155,13 +155,16 @@ namespace chip8
       m_sound_timer = value;
    }
 
-   void cpu::update_timers()
+   void cpu::cycle_delay_timer()
    {
       if (m_delay_timer > 0)
       {
          --m_delay_timer;
       }
+   }
 
+   void cpu::cycle_sound_timer()
+   {
       if (m_sound_timer > 0)
       {
          if (m_sound_timer == 1)

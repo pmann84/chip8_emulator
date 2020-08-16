@@ -1,5 +1,6 @@
-vendor
 x64 
 .vs
+vendor
+programs
 
 *.vcxproj.user

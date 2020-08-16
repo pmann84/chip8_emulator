@@ -6,7 +6,7 @@
 namespace chip8
 {
 
-   emulator::emulator() : m_draw_flag(false), m_speed(16)
+   emulator::emulator() : m_draw_flag(false), m_cpu_clock(500), m_delay_timer_clock(60), m_sound_timer_clock(60)
    {
    }
 
@@ -18,7 +18,7 @@ namespace chip8
 
    void emulator::run_cycle()
    {
-      if (m_chip.execute_opcode())
+      if (m_cpu_clock.tick() && m_chip.execute_opcode())
       {
          m_draw_flag = true;
       }
@@ -26,7 +26,14 @@ namespace chip8
 
    void emulator::update_timers()
    {
-      m_chip.update_timers();
+      if (m_delay_timer_clock.tick())
+      {
+         m_chip.cycle_delay_timer();
+      }
+      if (m_sound_timer_clock.tick())
+      {
+         m_chip.cycle_sound_timer();
+      }
    }
 
    bool emulator::should_draw()
@@ -49,24 +56,6 @@ namespace chip8
       return m_chip.display_data();
    }
 
-   void emulator::sleep()
-   {
-      std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<long long>(m_speed)));
-   }
-
-   void emulator::increase_speed()
-   {
-      m_speed -= 5;
-      if (m_speed <= 0)
-      {
-         m_speed = 1;
-      }
-   }
-
-   void emulator::decrease_speed()
-   {
-      m_speed += 5;
-   }
    void emulator::reload()
    {
       m_chip.reload();

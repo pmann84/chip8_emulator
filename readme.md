@@ -5,6 +5,7 @@ This is a basic Chip8 emulator written in C++ with simple graphical output using
 
 ## Dependencies
 * SDL
+ - Download the SDL2 development libraries from http://libsdl.org/download-2.0.php and extract them into the `vendor` folder.
 * C++
 
 ## Keypad

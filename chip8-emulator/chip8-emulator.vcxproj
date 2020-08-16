@@ -95,6 +95,7 @@
   <ItemGroup>
     <ClInclude Include="application.h" />
     <ClInclude Include="chip8.h" />
+    <ClInclude Include="clock.h" />
     <ClInclude Include="constants.h" />
     <ClInclude Include="emulator.h" />
     <ClInclude Include="opcode.h" />

@@ -3,6 +3,7 @@
 #include "opcode_executions.h"
 #include "constants.h"
 #include "opcode.h"
+#include "clock.h"
 
 #include <array>
 #include <filesystem>
@@ -48,7 +49,8 @@ namespace chip8
       byte_t get_sound_timer() const;
       void set_sound_timer(byte_t value);
 
-      void update_timers();
+      void cycle_delay_timer();
+      void cycle_sound_timer();
 
       void clear_graphics_memory();
       void clear_memory();

@@ -15,5 +15,6 @@
     <ClInclude Include="opcode.h" />
     <ClInclude Include="opcode_executions.h" />
     <ClInclude Include="application.h" />
+    <ClInclude Include="clock.h" />
   </ItemGroup>
 </Project>

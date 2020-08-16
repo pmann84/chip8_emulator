@@ -43,13 +43,7 @@ void app::run()
    m_is_running = true;
    while (m_is_running)
    {
-      // Run 9 cycles (500 = 60 * 9) cycle of the cpu - for this 
-      // simple emulator we just sleep for a scalable period of 
-      // ms at the end of the loop to make a better user experience
-      for (int i = 0; i < 9; ++i)
-      {
-         m_emulator.run_cycle();
-      }
+      m_emulator.run_cycle();
 
       // Check for any input and set any key presses here
       while (SDL_PollEvent(&m_poll_event) != 0)
@@ -65,16 +59,6 @@ void app::run()
             {
                switch (m_poll_event.key.keysym.sym)
                {
-                  case SDLK_LEFTBRACKET:
-                  {
-                     m_emulator.decrease_speed();
-                     break;
-                  }
-                  case SDLK_RIGHTBRACKET:
-                  {
-                     m_emulator.increase_speed();
-                     break;
-                  }
                   case SDLK_F5:
                   {
                      m_emulator.reload();
@@ -118,6 +102,5 @@ void app::run()
       }
 
       m_emulator.update_timers();
-      m_emulator.sleep();
    }
 }
