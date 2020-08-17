@@ -36,11 +36,12 @@ namespace chip8
       void cycle_delay_timer();
       void cycle_sound_timer();
 
+      void clear();
+
+   private:
       void clear_registers();
       void clear_stack();
       void reset_counters();
-
-      void reload();
 
    private:
       byte_t               m_registers[16];                         // 15 Registers + 16th for carry flag

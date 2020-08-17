@@ -4,8 +4,7 @@ namespace chip8
 {
    clock::clock(float frequency_hz)
    {
-      m_duration = std::chrono::nanoseconds(1000000000 / (uint64_t)frequency_hz);
-      m_offset = std::chrono::high_resolution_clock::now();
+      reset(frequency_hz);
    }
 
    bool clock::tick()
@@ -21,4 +20,16 @@ namespace chip8
          return false;
       }
    }
+
+   void clock::reset()
+   {
+      m_offset = std::chrono::high_resolution_clock::now();
+   }
+
+   void clock::reset(float frequency_hz)
+   {
+      m_duration = std::chrono::nanoseconds(1000000000 / (uint64_t)frequency_hz);
+      reset();
+   }
+
 }

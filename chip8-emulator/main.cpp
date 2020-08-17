@@ -14,13 +14,13 @@ int main(int argc, char* argv[])
    }
    std::filesystem::path program_filepath(argv[1]);
    
-   app a;
-   if (!a.load_program(program_filepath))
+   application app;
+   if (!app.load_program(program_filepath))
    {
       SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Cannot load program.", "File does not exist!", NULL);
       return 0;
    }
-   a.run();
+   app.run();
 
    return 0;
 }

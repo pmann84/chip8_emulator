@@ -9,6 +9,8 @@ namespace chip8
    public:
       clock(float frequency_hz);
       bool tick();
+      void reset();
+      void reset(float frequency_hz);
 
    private:
       std::chrono::duration<uint64_t, std::nano> m_duration;

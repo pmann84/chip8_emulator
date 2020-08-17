@@ -24,11 +24,11 @@ inline void log_sdl_error(std::ostream& os, const std::string& message)
    os << message << " error: " << SDL_GetError() << std::endl;
 }
 
-class app
+class application
 {
 public:
-   app();
-   ~app();
+   application();
+   ~application();
 
    bool load_program(std::filesystem::path program_filepath);
    void run();

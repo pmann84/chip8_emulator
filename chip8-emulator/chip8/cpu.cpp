@@ -117,6 +117,13 @@ namespace chip8
       }
    }
 
+   void cpu::clear()
+   {
+      clear_registers();
+      clear_stack();
+      reset_counters();
+   }
+
    void cpu::clear_registers()
    {
       for (uint8_t i = 0; i < 16; i++)
@@ -140,12 +147,5 @@ namespace chip8
       m_program_ctr = CHIP8_MEMORY_START;
       m_delay_timer = 0;
       m_sound_timer = 0;
-   }
-
-   void cpu::reload()
-   {
-      clear_registers();
-      clear_stack();
-      reset_counters();
    }
 }

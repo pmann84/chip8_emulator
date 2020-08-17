@@ -1,6 +1,6 @@
 #include "application.h"
 
-app::app() : m_is_running(false)
+application::application() : m_is_running(false)
 {
    if (SDL_Init(SDL_INIT_VIDEO) != 0)
    {
@@ -28,17 +28,17 @@ app::app() : m_is_running(false)
    m_texture = SDL_CreateTexture(m_renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STATIC, 64, 32);
 }
 
-app::~app()
+application::~application()
 {
    SDL_Quit();
 }
 
-bool app::load_program(std::filesystem::path program_filepath)
+bool application::load_program(std::filesystem::path program_filepath)
 {
    return m_emulator.load_program(program_filepath);
 }
 
-void app::run()
+void application::run()
 {
    m_is_running = true;
    while (m_is_running)
