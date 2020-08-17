@@ -6,7 +6,7 @@
 namespace chip8
 {
 
-   emulator::emulator() : m_draw_flag(false), m_cpu_clock(500), m_delay_timer_clock(60), m_sound_timer_clock(60)
+   emulator::emulator() : m_draw_flag(false), m_cpu_clock(CPU_SPEED), m_delay_timer_clock(REFRESH_RATE), m_sound_timer_clock(REFRESH_RATE)
    {
    }
 

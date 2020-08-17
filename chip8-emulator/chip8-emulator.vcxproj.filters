@@ -3,18 +3,25 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="emulator.cpp" />
-    <ClCompile Include="opcode.cpp" />
-    <ClCompile Include="chip8.cpp" />
-    <ClCompile Include="opcode_executions.cpp" />
     <ClCompile Include="application.cpp" />
+    <ClCompile Include="chip8\clock.cpp" />
+    <ClCompile Include="chip8\memory.cpp" />
+    <ClCompile Include="chip8\cpu.cpp" />
+    <ClCompile Include="chip8\opcode.cpp" />
+    <ClCompile Include="chip8\opcode_executions.cpp" />
+    <ClCompile Include="chip8\keyboard.cpp" />
+    <ClCompile Include="chip8\gfx_memory.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="chip8.h" />
     <ClInclude Include="emulator.h" />
-    <ClInclude Include="constants.h" />
-    <ClInclude Include="opcode.h" />
-    <ClInclude Include="opcode_executions.h" />
     <ClInclude Include="application.h" />
-    <ClInclude Include="clock.h" />
+    <ClInclude Include="chip8\clock.h" />
+    <ClInclude Include="chip8\memory.h" />
+    <ClInclude Include="chip8\cpu.h" />
+    <ClInclude Include="chip8\opcode.h" />
+    <ClInclude Include="chip8\opcode_executions.h" />
+    <ClInclude Include="chip8\constants.h" />
+    <ClInclude Include="chip8\keyboard.h" />
+    <ClInclude Include="chip8\gfx_memory.h" />
   </ItemGroup>
 </Project>

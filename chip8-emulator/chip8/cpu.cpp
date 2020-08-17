@@ -1,4 +1,4 @@
-#include "chip8.h"
+#include "cpu.h"
 
 #include <fstream>
 
@@ -12,41 +12,8 @@ namespace chip8
       reload();
    }
 
-   void cpu::load_fontset()
+   bool cpu::execute_opcode(const opcode& code)
    {
-      // Load fontset
-      for (int i = 0; i < 80; ++i)
-      {
-         m_memory[i] = fontset[i];
-      }
-   }
-
-   bool cpu::load_program(std::filesystem::path path)
-   {
-      if (!std::filesystem::exists(path))
-      {
-         return false;
-      }
-      std::basic_ifstream<unsigned char> program(path, std::ios::out | std::ios::binary);
-      // Get the file size
-      program.seekg(0, program.end);
-      uint16_t program_size = program.tellg();
-      program.seekg(0, program.beg);
-      program.read(&m_memory[CHIP8_MEMORY_START], program_size);
-      program.close();
-      return true;
-   }
-
-   opcode cpu::get_next_opcode()
-   {
-      // Gets the next opcode from memory that should be executed
-      return opcode(m_memory[m_program_ctr], m_memory[m_program_ctr + 1]);
-   }
-
-   bool cpu::execute_opcode()
-   {
-      // Fetch and decode
-      opcode code = get_next_opcode();
       return chip_table[code.upper_half_of_first_byte()](code, *this);
    }
 
@@ -115,25 +82,15 @@ namespace chip8
       return key_pressed;
    }
 
-   byte_t cpu::get_value_of_memory_at_location(uint16_t index) const 
-   {
-      return m_memory[index];
-   }
+   //byte_t cpu::get_value_of_gfx_memory_at_location(uint16_t index) const
+   //{
+   //   return m_gfx_memory[index];
+   //}
 
-   void cpu::set_value_of_memory_at_location(uint16_t index, byte_t value)
-   {
-      m_memory[index] = value;
-   }
-
-   byte_t cpu::get_value_of_gfx_memory_at_location(uint16_t index) const
-   {
-      return m_gfx_memory[index];
-   }
-
-   void cpu::set_value_of_gfx_memory_at_location(uint16_t index, byte_t value)
-   {
-      m_gfx_memory[index] = value;
-   }
+   //void cpu::set_value_of_gfx_memory_at_location(uint16_t index, byte_t value)
+   //{
+   //   m_gfx_memory[index] = value;
+   //}
 
    byte_t cpu::get_delay_timer() const
    {
@@ -175,15 +132,10 @@ namespace chip8
       }
    }
 
-   void cpu::clear_graphics_memory()
-   {
-      std::fill(std::begin(m_gfx_memory), std::end(m_gfx_memory), 0);
-   }
-
-   void cpu::clear_memory()
-   {
-      std::fill(std::begin(m_memory), std::end(m_memory), 0);
-   }
+   //void cpu::clear_graphics_memory()
+   //{
+   //   std::fill(std::begin(m_gfx_memory), std::end(m_gfx_memory), 0);
+   //}
 
    void cpu::clear_registers()
    {
@@ -220,12 +172,10 @@ namespace chip8
 
    void cpu::reload()
    {
-      clear_graphics_memory();
-      clear_memory();
+      //clear_graphics_memory();
       clear_registers();
       clear_stack();
       clear_keys();
       reset_counters();
-      load_fontset();
    }
 }
