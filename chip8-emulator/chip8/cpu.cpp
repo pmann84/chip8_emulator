@@ -58,11 +58,6 @@ namespace chip8
       m_registers[index] = value;
    }
 
-   void cpu::set_key(uint8_t key, uint8_t value)
-   {
-      m_keys[key] = value;
-   }
-
    bool cpu::is_key_in_register_pressed(byte_t index)
    {
       return  m_keys[m_registers[index]] != 0;
@@ -81,16 +76,6 @@ namespace chip8
       }
       return key_pressed;
    }
-
-   //byte_t cpu::get_value_of_gfx_memory_at_location(uint16_t index) const
-   //{
-   //   return m_gfx_memory[index];
-   //}
-
-   //void cpu::set_value_of_gfx_memory_at_location(uint16_t index, byte_t value)
-   //{
-   //   m_gfx_memory[index] = value;
-   //}
 
    byte_t cpu::get_delay_timer() const
    {
@@ -132,24 +117,11 @@ namespace chip8
       }
    }
 
-   //void cpu::clear_graphics_memory()
-   //{
-   //   std::fill(std::begin(m_gfx_memory), std::end(m_gfx_memory), 0);
-   //}
-
    void cpu::clear_registers()
    {
       for (uint8_t i = 0; i < 16; i++)
       {
          m_registers[i] = 0;
-      }
-   }
-
-   void cpu::clear_keys()
-   {
-      for (uint8_t i = 0; i < 16; i++)
-      {
-         m_keys[i] = 0;
       }
    }
 
@@ -172,10 +144,8 @@ namespace chip8
 
    void cpu::reload()
    {
-      //clear_graphics_memory();
       clear_registers();
       clear_stack();
-      clear_keys();
       reset_counters();
    }
 }

@@ -25,7 +25,6 @@ namespace chip8
       byte_t get_register(byte_t index) const;
       void set_register(byte_t index, byte_t value);
 
-      void set_key(uint8_t key, uint8_t value);
       bool is_key_in_register_pressed(byte_t index);
       bool check_for_key_press(byte_t reg_idx);
 
@@ -38,7 +37,6 @@ namespace chip8
       void cycle_sound_timer();
 
       void clear_registers();
-      void clear_keys();
       void clear_stack();
       void reset_counters();
 
@@ -52,7 +50,5 @@ namespace chip8
       program_counter_t    m_program_ctr = CHIP8_MEMORY_START;      // Program counter that can range from 0x000 -> 0xFFF (0-4095)
       byte_t               m_delay_timer = 0;
       byte_t               m_sound_timer = 0;
-
-      byte_t               m_keys[16];                              // track key presses
    };
 }
