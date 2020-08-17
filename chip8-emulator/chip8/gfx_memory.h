@@ -7,7 +7,7 @@ namespace chip8
    class gfx_memory
    {
    public:
-      gfx_memory() {}
+      gfx_memory();
 
       byte_t get(uint16_t index) const;
       void set(uint16_t index, byte_t value);

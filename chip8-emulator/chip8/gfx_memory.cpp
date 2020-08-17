@@ -2,6 +2,11 @@
 
 namespace chip8
 {
+   gfx_memory::gfx_memory()
+   {
+      clear();
+   }
+
    byte_t gfx_memory::get(uint16_t index) const
    {
       return m_memory[index];

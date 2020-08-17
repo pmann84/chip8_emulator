@@ -4,6 +4,7 @@
 #include "constants.h"
 #include "opcode.h"
 #include "clock.h"
+#include "keyboard.h"
 
 #include <array>
 
@@ -13,10 +14,10 @@ namespace chip8
    {
    public:
       cpu();
-      bool execute_opcode(const opcode& code); // Returns true for redraw
 
       // Convenience functions for opcode implementation
       void set_program_counter(program_counter_t ctr);
+      const program_counter_t get_program_counter() const;
       void increment_program_counter(program_counter_t increment_amount);
       void store_program_counter_in_stack();
       void set_program_counter_from_stack();
@@ -25,8 +26,8 @@ namespace chip8
       byte_t get_register(byte_t index) const;
       void set_register(byte_t index, byte_t value);
 
-      bool is_key_in_register_pressed(byte_t index);
-      bool check_for_key_press(byte_t reg_idx);
+      bool is_key_in_register_pressed(byte_t index, const keyboard& keys);
+      bool check_for_key_press(byte_t reg_idx, const keyboard& keys);
 
       byte_t get_delay_timer() const;
       void set_delay_timer(byte_t value);

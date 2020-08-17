@@ -1,11 +1,12 @@
 #include "emulator.h"
 
+#include "chip8/opcode_executions.h"
+
 #include <chrono>
 #include <thread>
 
 namespace chip8
 {
-
    emulator::emulator() 
       : m_draw_flag(false)
       , m_cpu_clock(CPU_SPEED)
@@ -17,12 +18,12 @@ namespace chip8
    bool emulator::load_program(std::filesystem::path path)
    {
       m_last_loaded_rom = path;
-      return m_cpu.load_program(path);
+      return m_memory.load_program(path);
    }
 
    void emulator::run_cycle()
    {
-      if (m_cpu_clock.tick() && m_cpu.execute_opcode())
+      if (m_cpu_clock.tick() && execute_next_opcode())
       {
          m_draw_flag = true;
       }
@@ -52,18 +53,35 @@ namespace chip8
 
    void emulator::set_keys(byte_t index, bool pressed)
    {
-      m_cpu.set_key(index, pressed ? 1 : 0);
+      m_keyboard.set(index, pressed ? 1 : 0);
    }
 
    const graphics_t& emulator::display_data()
    {
-      return m_cpu.display_data();
+      return m_gfx_memory.pixels();
    }
 
    void emulator::reload()
    {
-      m_cpu.reload();
-      m_cpu.load_program(m_last_loaded_rom);
+      m_cpu.clear();
+      m_gfx_memory.clear();
+      m_keyboard.clear();
+      m_delay_timer_clock.reset();
+      m_sound_timer_clock.reset();
+      m_cpu_clock.reset();
+      m_memory.clear();
+      m_memory.load_program(m_last_loaded_rom);
       m_draw_flag = true;
+   }
+
+   opcode chip8::emulator::get_next_opcode(cpu& cpu, memory& ram)
+   {
+      return m_memory.read(m_cpu.get_program_counter());
+   }
+
+   bool emulator::execute_next_opcode()
+   {
+      opcode code = get_next_opcode(m_cpu, m_memory);
+      return chip_table[code.upper_half_of_first_byte()](code, m_cpu, m_memory, m_gfx_memory, m_keyboard);
    }
 }

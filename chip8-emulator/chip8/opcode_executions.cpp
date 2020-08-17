@@ -1,32 +1,34 @@
 #include "opcode_executions.h"
 
 #include "opcode.h"
-#include "chip8.h"
+#include "cpu.h"
+#include "memory.h"
+#include "gfx_memory.h"
 
 namespace chip8
 {
-   bool opcode_not_implemented(const opcode& code, cpu& cpu) 
+   bool opcode_not_implemented(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    {
       std::cout << "Opcode [" << code << "] not implemented! Skipping! Warning: program may not run correctly." << std::endl;
       cpu.set_program_counter(2);
       return false; 
    }
    
-   bool opcode_0nnn(const opcode& code, cpu& cpu)
+   bool opcode_0nnn(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    {
-      return display_chip_table[code.lower_half_of_last_byte()](code, cpu);
+      return display_chip_table[code.lower_half_of_last_byte()](code, cpu, ram, gfx, keys);
    }
 
-   bool opcode_00e0(const opcode& code, cpu& cpu) 
+   bool opcode_00e0(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
       // Opcode: 00E0
       // Clears the screen.
-      cpu.clear_graphics_memory();
+      gfx.clear();
       cpu.increment_program_counter(2);
       return true;
    }
 
-   bool opcode_00ee(const opcode& code, cpu& cpu) 
+   bool opcode_00ee(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
       // Opcode: 00EE
       // Returns from a subroutine.
@@ -35,7 +37,7 @@ namespace chip8
       return false;
    }
 
-   bool opcode_1nnn(const opcode& code, cpu& cpu)
+   bool opcode_1nnn(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
       // Opcode: 1NNN
       // Jumps to address NNN.
@@ -44,7 +46,7 @@ namespace chip8
       return false; 
    }
 
-   bool opcode_2nnn(const opcode& code, cpu& cpu) 
+   bool opcode_2nnn(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
       // Opcode: 2NNN
       // Calls subroutine at NNN.
@@ -54,7 +56,7 @@ namespace chip8
       return false;
    }
 
-   bool opcode_3xnn(const opcode& code, cpu& cpu)
+   bool opcode_3xnn(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
       // Opcode: 3XNN
       // Skips the next instruction if VX equals NN. (Usually the next instruction is a jump to skip a code block)
@@ -64,7 +66,7 @@ namespace chip8
       return false; 
    }
 
-   bool opcode_4xnn(const opcode& code, cpu& cpu) 
+   bool opcode_4xnn(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
       // Opcode: 4XNN
       // Skips the next instruction if VX doesn't equal NN. (Usually the next instruction is a jump to skip a code block)
@@ -74,7 +76,7 @@ namespace chip8
       return false; 
    }
 
-   bool opcode_5xy0(const opcode& code, cpu& cpu) 
+   bool opcode_5xy0(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
       // Opcode: 5XY0
       // Skips the next instruction if VX equals VY. (Usually the next instruction is a jump to skip a code block)
@@ -84,7 +86,7 @@ namespace chip8
       return false; 
    }
 
-   bool opcode_6xnn(const opcode& code, cpu& cpu) 
+   bool opcode_6xnn(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
       // Opcode: 6XNN
       // Sets VX to NN.
@@ -95,7 +97,7 @@ namespace chip8
       return false; 
    }
 
-   bool opcode_7xnn(const opcode& code, cpu& cpu) 
+   bool opcode_7xnn(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
       // Opcode: 7XNN
       // Adds NN to VX. (Carry flag is not changed)
@@ -106,12 +108,12 @@ namespace chip8
       return false; 
    }
 
-   bool opcode_8xyn(const opcode& code, cpu& cpu) 
+   bool opcode_8xyn(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
-      return arithmetic_chip_table[code.lower_half_of_last_byte()](code, cpu);
+      return arithmetic_chip_table[code.lower_half_of_last_byte()](code, cpu, ram, gfx, keys);
    }
 
-   bool opcode_8xy0(const opcode& code, cpu& cpu) 
+   bool opcode_8xy0(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
       // Opcode: 8XY0
       // Sets VX to the value of VY.
@@ -122,7 +124,7 @@ namespace chip8
       return false; 
    }
 
-   bool opcode_8xy1(const opcode& code, cpu& cpu) 
+   bool opcode_8xy1(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
       // Opcode: 8XY1
       // Sets VX to VX or VY. (Bitwise OR operation)
@@ -133,7 +135,7 @@ namespace chip8
       return false; 
    }
 
-   bool opcode_8xy2(const opcode& code, cpu& cpu) 
+   bool opcode_8xy2(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keysu)
    { 
       // Opcode: 8XY2
       // Sets VX to VX and VY. (Bitwise AND operation)
@@ -144,7 +146,7 @@ namespace chip8
       return false;
    }
 
-   bool opcode_8xy3(const opcode& code, cpu& cpu) 
+   bool opcode_8xy3(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    {
       // Opcode: 8XY3
       // Sets VX to VX xor VY.
@@ -155,7 +157,7 @@ namespace chip8
       return false;
    }
 
-   bool opcode_8xy4(const opcode& code, cpu& cpu) 
+   bool opcode_8xy4(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
       // Opcode: 8XY4
       // Adds VY to VX. VF is set to 1 when there's a carry, and to 0 when there isn't.
@@ -170,7 +172,7 @@ namespace chip8
       return false; 
    }
 
-   bool opcode_8xy5(const opcode& code, cpu& cpu) 
+   bool opcode_8xy5(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
       // Opcode: 8XY5
       // VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when there isn't.
@@ -185,7 +187,7 @@ namespace chip8
       return false; 
    }
 
-   bool opcode_8xy6(const opcode& code, cpu& cpu) 
+   bool opcode_8xy6(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
       // Opcode: 8XY6
       // Stores the least significant bit of VX in VF and then shifts VX to the right by 1
@@ -197,7 +199,7 @@ namespace chip8
       return false; 
    }
 
-   bool opcode_8xy7(const opcode& code, cpu& cpu) 
+   bool opcode_8xy7(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    {
       // Opcode: 8XY7
       // Sets VX to VY minus VX.VF is set to 0 when there's a borrow, and 1 when there isn't.
@@ -212,7 +214,7 @@ namespace chip8
       return false; 
    }
 
-   bool opcode_8xye(const opcode& code, cpu& cpu) 
+   bool opcode_8xye(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
       // Opcode: 8XYE
       // Stores the most significant bit of VX in VF and then shifts VX to the left by 1
@@ -223,7 +225,7 @@ namespace chip8
       return false; 
    }
 
-   bool opcode_9xy0(const opcode& code, cpu& cpu) 
+   bool opcode_9xy0(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
       // Opcode: 9XY0
       // Skips the next instruction if VX doesn't equal VY. (Usually the next instruction is a jump to skip a code block)
@@ -233,7 +235,7 @@ namespace chip8
       return false; 
    }
 
-   bool opcode_annn(const opcode& code, cpu& cpu) 
+   bool opcode_annn(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
       // Opcode: ANNN
       // Sets I to the address NNN.
@@ -242,7 +244,7 @@ namespace chip8
       return false; 
    }
 
-   bool opcode_bnnn(const opcode& code, cpu& cpu)
+   bool opcode_bnnn(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
       // Opcode: BNNN
       // Jumps to the address NNN plus V0.
@@ -251,7 +253,7 @@ namespace chip8
       return false; 
    }
 
-   bool opcode_cxnn(const opcode& code, cpu& cpu) 
+   bool opcode_cxnn(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
       // Opcode: CXNN 
       // Sets VX to the result of a bitwise and operation on a random number (Typically: 0 to 255) and NN.
@@ -262,7 +264,7 @@ namespace chip8
       return false; 
    }
 
-   bool opcode_dxyn(const opcode& code, cpu& cpu) 
+   bool opcode_dxyn(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
       // Opcode: DXYN 
       // Draws a sprite at coordinate(VX, VY) that has a width of 8 pixels 
@@ -283,17 +285,17 @@ namespace chip8
 
       for (int y = 0; y < height; ++y)
       {
-         pixel = cpu.get_value_of_memory_at_location(cpu.get_index_register() + y);
+         pixel = ram.get(cpu.get_index_register() + y);
          for (int x = 0; x < 8; ++x)
          {
             if ((pixel & (0x80 >> x)) != 0)
             {
                auto gfx_mem_idx = x_loc + x + ((y_loc + y) * 64);
-               if (cpu.get_value_of_gfx_memory_at_location(gfx_mem_idx) == 1)
+               if (gfx.get(gfx_mem_idx) == 1)
                {
                   cpu.set_register(0xf, 1);
                }
-               cpu.set_value_of_gfx_memory_at_location(gfx_mem_idx, cpu.get_value_of_gfx_memory_at_location(gfx_mem_idx) ^ 1);
+               gfx.set(gfx_mem_idx, gfx.get(gfx_mem_idx) ^ 1);
             }
          }
       }
@@ -302,41 +304,41 @@ namespace chip8
       return true;
    }
 
-   bool opcode_exnn(const opcode& code, cpu& cpu) 
+   bool opcode_exnn(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
-      return key_chip_table[code.upper_half_of_last_byte()](code, cpu);
+      return key_chip_table[code.upper_half_of_last_byte()](code, cpu, ram, gfx, keys);
    }
 
-   bool opcode_ex9e(const opcode& code, cpu& cpu) 
+   bool opcode_ex9e(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
       // Opcode: EX9E
       // Skips the next instruction if the key stored in VX is pressed. (Usually the next instruction is a jump to skip a code block)
       auto reg = code.lower_half_of_first_byte();
-      cpu.increment_program_counter(cpu.is_key_in_register_pressed(reg) ? 4 : 2);
+      cpu.increment_program_counter(cpu.is_key_in_register_pressed(reg, keys) ? 4 : 2);
       return false; 
    }
 
-   bool opcode_exa1(const opcode& code, cpu& cpu) 
+   bool opcode_exa1(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
       // Opcode: EXA1
       // Skips the next instruction if the key stored in VX isn't pressed. (Usually the next instruction is a jump to skip a code block)
       auto reg = code.lower_half_of_first_byte();
-      cpu.increment_program_counter(!cpu.is_key_in_register_pressed(reg) ? 4 : 2);
+      cpu.increment_program_counter(!cpu.is_key_in_register_pressed(reg, keys) ? 4 : 2);
       return false; 
    }
 
-   bool opcode_fxnn(const opcode& code, cpu& cpu) 
+   bool opcode_fxnn(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
       auto idx = code.upper_half_of_last_byte();
-      return misc_chip_table[code.upper_half_of_last_byte()](code, cpu);
+      return misc_chip_table[code.upper_half_of_last_byte()](code, cpu, ram, gfx, keys);
    }
 
-   bool opcode_fx0n(const opcode& code, cpu& cpu) 
+   bool opcode_fx0n(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
-      return misc_chip_sub_table_zero[code.lower_half_of_last_byte()](code, cpu);
+      return misc_chip_sub_table_zero[code.lower_half_of_last_byte()](code, cpu, ram, gfx, keys);
    }
 
-   bool opcode_fx07(const opcode& code, cpu& cpu) 
+   bool opcode_fx07(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
       // Opcode: FX07
       // Sets VX to the value of the delay timer.
@@ -346,25 +348,25 @@ namespace chip8
       return false; 
    }
 
-   bool opcode_fx0a(const opcode& code, cpu& cpu) 
+   bool opcode_fx0a(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
       // Opcode: FX0A
       // A key press is awaited, and then stored in VX. (Blocking Operation.All instruction halted until next key event)
       uint8_t reg = code.lower_half_of_first_byte();
 
-      if (!cpu.check_for_key_press(reg))
+      if (!cpu.check_for_key_press(reg, keys))
          return false; // Try again until a key is pressed
 
       cpu.increment_program_counter(2);
       return false;
    }
 
-   bool opcode_fx1n(const opcode& code, cpu& cpu) 
+   bool opcode_fx1n(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    {
-      return misc_chip_sub_table_one[code.lower_half_of_last_byte()](code, cpu);
+      return misc_chip_sub_table_one[code.lower_half_of_last_byte()](code, cpu, ram, gfx, keys);
    }
 
-   bool opcode_fx1e(const opcode& code, cpu& cpu) 
+   bool opcode_fx1e(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
       // Opcode: FX1E
       // Adds VX to I.VF is not affected.
@@ -374,7 +376,7 @@ namespace chip8
       return false; 
    }
 
-   bool opcode_fx15(const opcode& code, cpu& cpu) 
+   bool opcode_fx15(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
       // Opcode: FX15
       // Sets the delay timer to VX.
@@ -384,7 +386,7 @@ namespace chip8
       return false;
    }
 
-   bool opcode_fx18(const opcode& code, cpu& cpu) 
+   bool opcode_fx18(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
       // Opcode: FX18
       // Sets the sound timer to VX.
@@ -394,7 +396,7 @@ namespace chip8
       return false; 
    }
 
-   bool opcode_fx29(const opcode& code, cpu& cpu) 
+   bool opcode_fx29(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
       // Opcode: FX29
       // Sets I to the location of the sprite for the character in VX. Characters 0-F (in hexadecimal) are represented by a 4x5 font.
@@ -404,7 +406,7 @@ namespace chip8
       return false; 
    }
 
-   bool opcode_fx33(const opcode& code, cpu& cpu) 
+   bool opcode_fx33(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
       // Opcode: FX33
       // Stores the binary-coded decimal representation of VX, with the most significant of three digits 
@@ -414,13 +416,13 @@ namespace chip8
       uint8_t reg = code.lower_half_of_first_byte();
       auto idx = cpu.get_index_register();
       auto value_at_reg = cpu.get_register(reg);
-      cpu.set_value_of_memory_at_location(idx, value_at_reg / 100);
-      cpu.set_value_of_memory_at_location(idx + 1, (value_at_reg / 10) % 10);
-      cpu.set_value_of_memory_at_location(idx + 2, (value_at_reg % 100) % 10);
+      ram.set(idx, value_at_reg / 100);
+      ram.set(idx + 1, (value_at_reg / 10) % 10);
+      ram.set(idx + 2, (value_at_reg % 100) % 10);
       cpu.increment_program_counter(2);
       return false; 
    }
-   bool opcode_fx55(const opcode& code, cpu& cpu) 
+   bool opcode_fx55(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
       // Opcode: FX55
       // Stores V0 to VX (including VX) in memory starting at address I. The offset from I is increased by 
@@ -429,13 +431,13 @@ namespace chip8
       auto idx = cpu.get_index_register();
       for (int i = 0; i <= reg; ++i)
       {
-         cpu.set_value_of_memory_at_location(idx + i, cpu.get_register(i));
+         ram.set(idx + i, cpu.get_register(i));
       }
       cpu.increment_program_counter(2);
       return false;
    }
    
-   bool opcode_fx65(const opcode& code, cpu& cpu) 
+   bool opcode_fx65(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)
    { 
       // Opcode: FX65
       // Fills V0 to VX (including VX) with values from memory starting at address I. The offset from I is 
@@ -444,7 +446,7 @@ namespace chip8
       auto idx = cpu.get_index_register();
       for (int i = 0; i <= reg; ++i)
       {
-         cpu.set_register(i, cpu.get_value_of_memory_at_location(idx + i));
+         cpu.set_register(i, ram.get(idx + i));
       }
       cpu.increment_program_counter(2);
       return false;

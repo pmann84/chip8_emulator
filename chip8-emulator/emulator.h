@@ -26,6 +26,10 @@ namespace chip8
       void reload();
 
    private:
+      opcode get_next_opcode(cpu& cpu, memory& ram);
+      bool execute_next_opcode(); // Returns true for redraw
+
+   private:
       cpu m_cpu;
       memory m_memory;
       gfx_memory m_gfx_memory;

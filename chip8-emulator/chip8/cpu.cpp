@@ -6,20 +6,19 @@
 
 namespace chip8
 {
-
    cpu::cpu()
    {
-      reload();
-   }
-
-   bool cpu::execute_opcode(const opcode& code)
-   {
-      return chip_table[code.upper_half_of_first_byte()](code, *this);
+      clear();
    }
 
    void cpu::set_program_counter(program_counter_t ctr)
    {
       m_program_ctr = ctr;
+   }
+
+   const program_counter_t cpu::get_program_counter() const
+   {
+      return m_program_ctr;
    }
 
    void cpu::increment_program_counter(program_counter_t increment_amount)
@@ -58,17 +57,17 @@ namespace chip8
       m_registers[index] = value;
    }
 
-   bool cpu::is_key_in_register_pressed(byte_t index)
+   bool cpu::is_key_in_register_pressed(byte_t index, const keyboard& keys)
    {
-      return  m_keys[m_registers[index]] != 0;
+      return keys.is_pressed(m_registers[index]);
    }
 
-   bool cpu::check_for_key_press(byte_t reg_idx)
+   bool cpu::check_for_key_press(byte_t reg_idx, const keyboard& keys)
    {
       bool key_pressed = false;
       for (int i = 0; i < 16; ++i)
       {
-         if (m_keys[i] != 0)
+         if (keys.is_pressed(i))
          {
             m_registers[reg_idx] = i;
             key_pressed = true;
@@ -111,6 +110,7 @@ namespace chip8
       {
          if (m_sound_timer == 1)
          {
+            // TODO: Add a callback to the class that can play sound
             //std::cout << "BEEP!" << std::endl;
          }
          --m_sound_timer;

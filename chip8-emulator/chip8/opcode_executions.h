@@ -8,59 +8,62 @@ namespace chip8
 {
    class cpu;
    class opcode;
+   class keyboard;
+   class memory;
+   class gfx_memory;
 
-   using opcode_execution_func_t = std::function<bool(const opcode& code, cpu& cpu)>;
+   using opcode_execution_func_t = std::function<bool(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys)>;
 
-   bool opcode_not_implemented(const opcode& code, cpu& cpu);
+   bool opcode_not_implemented(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
 
-   bool opcode_0nnn(const opcode& code, cpu& cpu);
-   bool opcode_00e0(const opcode& code, cpu& cpu);
-   bool opcode_00ee(const opcode& code, cpu& cpu);
+   bool opcode_0nnn(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
+   bool opcode_00e0(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
+   bool opcode_00ee(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
 
-   bool opcode_1nnn(const opcode& code, cpu& cpu);
-   bool opcode_2nnn(const opcode& code, cpu& cpu);
-   bool opcode_3xnn(const opcode& code, cpu& cpu);
-   bool opcode_4xnn(const opcode& code, cpu& cpu);
-   bool opcode_5xy0(const opcode& code, cpu& cpu);
-   bool opcode_6xnn(const opcode& code, cpu& cpu);
-   bool opcode_7xnn(const opcode& code, cpu& cpu);
+   bool opcode_1nnn(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
+   bool opcode_2nnn(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
+   bool opcode_3xnn(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
+   bool opcode_4xnn(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
+   bool opcode_5xy0(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
+   bool opcode_6xnn(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
+   bool opcode_7xnn(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
 
-   bool opcode_8xyn(const opcode& code, cpu& cpu);
-   bool opcode_8xy0(const opcode& code, cpu& cpu);
-   bool opcode_8xy1(const opcode& code, cpu& cpu);
-   bool opcode_8xy2(const opcode& code, cpu& cpu);
-   bool opcode_8xy3(const opcode& code, cpu& cpu);
-   bool opcode_8xy4(const opcode& code, cpu& cpu);
-   bool opcode_8xy5(const opcode& code, cpu& cpu);
-   bool opcode_8xy6(const opcode& code, cpu& cpu);
-   bool opcode_8xy7(const opcode& code, cpu& cpu);
-   bool opcode_8xye(const opcode& code, cpu& cpu);
+   bool opcode_8xyn(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
+   bool opcode_8xy0(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
+   bool opcode_8xy1(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
+   bool opcode_8xy2(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
+   bool opcode_8xy3(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
+   bool opcode_8xy4(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
+   bool opcode_8xy5(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
+   bool opcode_8xy6(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
+   bool opcode_8xy7(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
+   bool opcode_8xye(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
 
-   bool opcode_9xy0(const opcode& code, cpu& cpu);
-   bool opcode_annn(const opcode& code, cpu& cpu);
-   bool opcode_bnnn(const opcode& code, cpu& cpu);
-   bool opcode_cxnn(const opcode& code, cpu& cpu);
-   bool opcode_dxyn(const opcode& code, cpu& cpu);
+   bool opcode_9xy0(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
+   bool opcode_annn(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
+   bool opcode_bnnn(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
+   bool opcode_cxnn(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
+   bool opcode_dxyn(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
    
-   bool opcode_exnn(const opcode& code, cpu& cpu);
-   bool opcode_ex9e(const opcode& code, cpu& cpu);
-   bool opcode_exa1(const opcode& code, cpu& cpu);
+   bool opcode_exnn(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
+   bool opcode_ex9e(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
+   bool opcode_exa1(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
 
-   bool opcode_fxnn(const opcode& code, cpu& cpu);
+   bool opcode_fxnn(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
 
-   bool opcode_fx0n(const opcode& code, cpu& cpu);
-   bool opcode_fx07(const opcode& code, cpu& cpu);
-   bool opcode_fx0a(const opcode& code, cpu& cpu);
+   bool opcode_fx0n(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
+   bool opcode_fx07(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
+   bool opcode_fx0a(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
 
-   bool opcode_fx1n(const opcode& code, cpu& cpu);
-   bool opcode_fx1e(const opcode& code, cpu& cpu);
-   bool opcode_fx15(const opcode& code, cpu& cpu);
-   bool opcode_fx18(const opcode& code, cpu& cpu);
+   bool opcode_fx1n(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
+   bool opcode_fx1e(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
+   bool opcode_fx15(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
+   bool opcode_fx18(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
 
-   bool opcode_fx29(const opcode& code, cpu& cpu);
-   bool opcode_fx33(const opcode& code, cpu& cpu);
-   bool opcode_fx55(const opcode& code, cpu& cpu);
-   bool opcode_fx65(const opcode& code, cpu& cpu);
+   bool opcode_fx29(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
+   bool opcode_fx33(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
+   bool opcode_fx55(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
+   bool opcode_fx65(const opcode& code, cpu& cpu, memory& ram, gfx_memory& gfx, keyboard& keys);
 
    // Chip table - defines functions for executing opcode instructions based on the first
    // half of the first byte of the opcode e.g. DXYN is keyed off D etc. Some codes that 

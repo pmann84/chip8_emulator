@@ -40,7 +40,7 @@ namespace chip8
       std::basic_ifstream<unsigned char> program(path, std::ios::out | std::ios::binary);
       // Get the file size
       program.seekg(0, program.end);
-      uint16_t program_size = program.tellg();
+      auto program_size = program.tellg();
       program.seekg(0, program.beg);
       program.read(&m_memory[CHIP8_MEMORY_START], program_size);
       program.close();
